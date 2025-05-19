@@ -10,15 +10,15 @@ import Head from "next/head";
 const MainPage = (Component: { getLayout: any }) => {
   return (
     <>
-      <Head>
+      {/* <Head>
         <title>I8U8</title>
         <meta name={"robots"} content={"noindex, nofollow"} />
-      </Head>
+      </Head> */}
 
       <div className="font-sans text-gray-200 bg-gray-900">
         <HeroBlock />
 
-        <AboutUsBlock />
+        {/* <AboutUsBlock />
 
         <ServicesBlock />
 
@@ -26,7 +26,7 @@ const MainPage = (Component: { getLayout: any }) => {
 
         <TestimonialsBlock />
 
-        <ContactBlock />
+        <ContactBlock /> */}
       </div>
     </>
   );
