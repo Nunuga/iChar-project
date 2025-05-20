@@ -35,7 +35,7 @@ const MainPage = () => {
             <Image
               pb="100%"
               w={{ base: "100px", md: "40px", lg: "200px" }}
-              src="/logo.png"
+              src="/v.png"
               alt="logo"
             />
           </Box>

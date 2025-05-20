@@ -98,22 +98,22 @@ export const Header = () => {
   //         : "bg-transparent py-5"
   //     }`}
   //   >
-  //     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-  //       <div className="flex items-center justify-between">
-  //         {/* Logo */}
-  //         <div className="flex items-center">
-  //           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mr-3">
-  //             <Link href={"/main"}>
-  //               <Image
-  //                 src={"/logoB.png"}
-  //                 alt={"I8U8 logo"}
-  //                 width={25}
-  //                 height={40}
-  //               />
-  //             </Link>
-  //           </div>
-  //           <span className="text-xl font-bold text-white"></span>
-  //         </div>
+      // <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      //   <div className="flex items-center justify-between">
+      //     {/* Logo */}
+      //     <div className="flex items-center">
+      //       <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mr-3">
+      //         <Link href={"/main"}>
+      //           <Image
+      //             src={"/logoB.png"}
+      //             alt={"I8U8 logo"}
+      //             width={25}
+      //             height={40}
+      //           />
+      //         </Link>
+      //       </div>
+      //       <span className="text-xl font-bold text-white"></span>
+      //     </div>
 
   //         {/* Desktop Navigation */}
   //         <nav
