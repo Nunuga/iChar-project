@@ -8,7 +8,7 @@ const MainPage = () => {
   const router = useRouter();
   setTimeout(() => {
     router.push("/main");
-  }, 3000);
+  }, 0);
 
   return (
     <>
@@ -17,7 +17,7 @@ const MainPage = () => {
         <meta name={"robots"} content={"noindex, nofollow"} />
       </Head>
 
-      <MotionBox
+      {/* <MotionBox
         //@ts-ignore
         h={"100%"}
         mt={{ base: "400px", md: "400px", lg: "700px" }}
@@ -40,7 +40,7 @@ const MainPage = () => {
             />
           </Box>
         </AbsoluteCenter>
-      </MotionBox>
+      </MotionBox> */}
     </>
   );
 };
