@@ -40,7 +40,7 @@ export const HeroBlock = () => {
           <div className="flex flex-row sm:flex-col gap-4 justify-center">
             <a
               href="#contacts"
-              className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1"
+              className="px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white font-medium py-3 px-6 rounded-md shadow-lg transition shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1"
             >
               Список резюме
             </a>
