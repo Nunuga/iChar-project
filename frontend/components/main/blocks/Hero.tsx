@@ -1,10 +1,11 @@
+import Image from "next/image";
 export const HeroBlock = () => {
   return (
     <section
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-900">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(120,119,198,0.1)_0,rgba(0,0,0,0)_70%)]"></div>
       </div>
 
@@ -15,9 +16,19 @@ export const HeroBlock = () => {
               Поставщик ИТ-решений нового поколения
             </div> */}
           {/* </div> */}
+                      <div className="h-100 w-100 rounded-lg flex items-center justify-center mr-3">
+             
+                <Image
+                  src={"/v.png"}
+                  alt={"I8U8 logo"}
+                  width={510}
+                  height={40}
+                />
+          
+            </div>
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-8">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-              База кандидатов
+              {/* База кандидатов */}
             </span>
             <br />
             {/* Благодаря инновационным технологиям */}
@@ -26,7 +37,7 @@ export const HeroBlock = () => {
             Раскройте весь потенциал вашей компании с помощью наших передовых
             программных решений и консультационных услуг
           </p> */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-row sm:flex-col gap-4 justify-center">
             <a
               href="#contacts"
               className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1"

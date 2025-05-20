@@ -20,7 +20,7 @@ export const PortfolioBase = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-indigo-900 py-24 pb-12 px-4 sm:px-6 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] py-24 pb-12 px-4 sm:px-6 text-white">
       <div className="max-w-6xl mx-auto">
         {/* Header/Profile Card */}
         <ProfileHeader professional={professional} />
