@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:15.4-alpine
+    container_name: postgres
+    env_file:
+      - ./db/.env.local
+    volumes:
+      - ./db/pgdata:/var/lib/postgresql/data
+    ports:
+      - "5451:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - net
+
+  backend:
+    image: backend:dev
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command: poetry run python manage.py runserver 0.0.0.0:8000
+    environment:
+      - SERVICE_TYPE=django
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env.local
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/usr/src/app/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
