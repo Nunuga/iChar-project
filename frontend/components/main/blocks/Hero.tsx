@@ -12,20 +12,13 @@ export const HeroBlock = () => {
       <div className="container mx-auto pt-20 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           {/* <div className="mb-6 inline-block"> */}
-            {/* <div className="bg-indigo-600 bg-opacity-20 backdrop-blur-sm rounded-xl p-2 px-4 text-indigo-300 text-sm font-medium">
+          {/* <div className="bg-indigo-600 bg-opacity-20 backdrop-blur-sm rounded-xl p-2 px-4 text-indigo-300 text-sm font-medium">
               Поставщик ИТ-решений нового поколения
             </div> */}
           {/* </div> */}
-                      <div className="h-100 w-100 rounded-lg flex items-center justify-center mr-3">
-             
-                <Image
-                  src={"/v.png"}
-                  alt={"I8U8 logo"}
-                  width={510}
-                  height={40}
-                />
-          
-            </div>
+          <div className="h-100 w-100 rounded-lg flex items-center justify-center mr-3">
+            <Image src={"/v.png"} alt={"I8U8 logo"} width={510} height={40} />
+          </div>
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-8">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
               {/* База кандидатов */}
@@ -51,8 +44,6 @@ export const HeroBlock = () => {
               Добавить резюме
             </a>
           </div>
-
-          
         </div>
       </div>
     </section>
