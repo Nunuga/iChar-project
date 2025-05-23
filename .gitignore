@@ -1,0 +1,9 @@
+pgdata/
+.vscode
+.idea
+#!/backend/.env.local
+# /backend/.env.local
+pg-backups/
+ch-backups/
+elasticsearch_volume/
+*.tar

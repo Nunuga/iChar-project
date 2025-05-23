@@ -1,0 +1,52 @@
+FROM surnet/alpine-python-wkhtmltopdf:3.13.1-0.12.6-full AS wkhtmltopdf
+FROM python:3.13.2-alpine3.21 AS app
+
+# set work directory
+WORKDIR /usr/src/app/backend
+
+# set environment variables
+# PYTHONDONTWRITEBYTECODE in dev env can be changed to speedup "compilation"
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install dependencies
+COPY --from=wkhtmltopdf /bin/wkhtmltopdf /bin/wkhtmltopdf
+COPY --from=wkhtmltopdf /bin/wkhtmltoimage /bin/wkhtmltoimage
+COPY --from=wkhtmltopdf /lib/libwkhtmltox* /lib/
+
+RUN apk add --no-cache git libxrender \
+    fontconfig \
+    freetype \
+    libx11 \
+    libstdc++ \
+    libgcc \
+    && pip install --upgrade pip
+
+RUN apk add ttf-freefont ttf-dejavu fontconfig msttcorefonts-installer
+RUN update-ms-fonts
+RUN fc-cache -fv
+
+# Install Poetry
+RUN pip install poetry
+
+# Copy only the pyproject.toml and poetry.lock files to the container
+COPY pyproject.toml /usr/src/app/backend/
+COPY poetry.lock* /usr/src/app/backend/
+
+# Install project dependencies using Poetry
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-root
+
+# Clean up the .netrc file after use for security
+RUN rm -f ~/.netrc
+
+# copy entrypoint.sh
+COPY ./entrypoint.sh /usr/src/app/backend/entrypoint.sh
+
+RUN chmod +x entrypoint.sh
+
+# copy project
+COPY . /usr/src/app/backend/
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/app/backend/entrypoint.sh"]
