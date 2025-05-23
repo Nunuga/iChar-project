@@ -5,13 +5,11 @@ import { ReactNode } from "react";
 const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
     <>
-      <Header />
-      <main>
+      {/* <Header /> */}
+      <main className="min-h-screen bg-gradient-to-br from-gray-900 to-indigo-900 py-24 pb-12 px-4">
         <div>{children}</div>
       </main>
-      <footer>
-        <Footer />
-      </footer>
+      <footer>{/* <Footer /> */}</footer>
     </>
   );
 };
