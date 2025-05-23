@@ -5,46 +5,42 @@ import { ResumeButtonView } from "./view/ResumeButtonView";
 
 export const ResumeTable = ({ data }: { data: any }) => {
   return (
-    <table className="w-full rounded-2xl transition-all shadow">
-      <thead className="bg-indigo-600 text-white">
-        <tr>
-          <th className="px-6 py-3">ID</th>
-          <th className="px-6 py-3">Статус</th>
-          <th className="px-6 py-3">ФИО</th>
-          <th className="px-6 py-3">Должность</th>
-          <th className="px-6 py-3">Опции</th>
-        </tr>
-      </thead>
-      <tbody className="bg-indigo-900">
-        {data?.map((item: any, idx: number) => (
-          <>
-            <tr key={item.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-white">
-                {item.id}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-white">
-                {resumeStatusParser[item.status]}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-white">
-                {item.first_name} {item.last_name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-white">
-                {item.position}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap flex justify-center gap-2">
-                <ResumeButtonView id={item.id} />
-                <ResumeButtonEdit id={item.id} />
-                <ResumeButtonDelete id={item.id} />
-              </td>
-            </tr>
-            <tr>
-              <td colSpan={5}>
-                <div className="w-full border-b-1 border-b-indigo-500" />
-              </td>
-            </tr>
-          </>
-        ))}
-      </tbody>
-    </table>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {data?.map((item: any) => (
+        <div key={item.id} className="bg-indigo-900 rounded-lg shadow-md overflow-hidden transition-all hover:shadow-lg">
+          <div className="bg-indigo-600 text-white px-4 py-3 ">
+            <h3 className="font-semibold text-lg">
+              {item.position}
+              {/* {item.first_name} {item.last_name} */}
+            </h3>
+            {/* <p className="text-indigo-100">{item.position}</p> */}
+          </div>
+          
+          <div className="p-4 text-white">
+          
+            <div className="mb-3 flex flex-row gap-2" >
+              {/* <span className="block text-sm text-indigo-300 " ></span> */}
+              <span>{item.first_name} {item.last_name}</span>
+            </div>
+            <div className="mb-3 flex flex-row gap-2" >
+              <span className="block text-sm text-indigo-300 " >ID:</span>
+              <span>{item.id}</span>
+            </div>
+            
+            <div className="mb-4 flex flex-row gap-2"  >
+              <span className="block text-sm text-indigo-300">Статус:</span>
+              <span>{resumeStatusParser[item.status]}</span>
+            </div>
+            
+            
+            <div className="flex flex-row sm:flex-col gap-4 justify-center gap-2 mt-4">
+              <ResumeButtonView id={item.id} />
+              <ResumeButtonEdit id={item.id} />
+              <ResumeButtonDelete id={item.id} />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };

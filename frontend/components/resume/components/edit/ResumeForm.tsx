@@ -2,13 +2,7 @@ import { useUpdateResumeItemMutation } from "@/api/resumeApi";
 import { useEffect, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 
-export const ResumeForm = ({
-  data,
-  isOpen,
-}: {
-  data: any;
-  isOpen: boolean;
-}) => {
+export const ResumeForm = ({ data, isOpen }: { data: any; isOpen: boolean }) => {
   const {
     register,
     handleSubmit,
@@ -40,495 +34,288 @@ export const ResumeForm = ({
     }
   };
 
-  // Experience field array
-  const {
-    fields: experienceFields,
-    append: appendExperience,
-    remove: removeExperience,
-  } = useFieldArray({
-    control,
-    name: "experience",
-  });
-
-  // Education field array
-  const {
-    fields: educationFields,
-    append: appendEducation,
-    remove: removeEducation,
-  } = useFieldArray({
-    control,
-    name: "education",
-  });
-
-  // Certifications field array
-  const {
-    fields: certificationsFields,
-    append: appendCertification,
-    remove: removeCertification,
-  } = useFieldArray({
-    control,
-    name: "certifications",
-  });
-
-  // Project field array
-  const {
-    fields: projectsFields,
-    append: appendProject,
-    remove: removeProject,
-  } = useFieldArray({
-    control,
-    name: "projects",
-  });
-
-  // Skills field array
-  const {
-    fields: skillsFields,
-    append: appendSkill,
-    remove: removeSkill,
-  } = useFieldArray({
-    control,
-    name: "skills",
-  });
+  // Field arrays
+  const fieldArrays = {
+    experience: useFieldArray({ control, name: "experience" }),
+    education: useFieldArray({ control, name: "education" }),
+    certifications: useFieldArray({ control, name: "certifications" }),
+    projects: useFieldArray({ control, name: "projects" }),
+    skills: useFieldArray({ control, name: "skills" }),
+  };
 
   const projectsValues = watch("projects") || [];
-
-  // Для хранения current value input'a технологий каждого поля
   const [techInputs, setTechInputs] = useState<Record<number, string>>({});
-
   const techInputRefs = useRef<any>({});
 
-  // Добавление технологии в массив
   const handleAddTech = (index: any, value: any) => {
     if (!value.trim()) return;
     const currentArr = projectsValues?.[index]?.technologies || [];
     if (currentArr.includes(value.trim())) return;
 
     const newArr = [...currentArr, value.trim()];
-    setValue(`projects.${index}.technologies`, newArr, {
-      shouldValidate: true,
-    });
-
-    setTechInputs((prev) => ({
-      ...prev,
-      [index]: "",
-    }));
+    setValue(`projects.${index}.technologies`, newArr, { shouldValidate: true });
+    setTechInputs((prev) => ({ ...prev, [index]: "" }));
   };
 
-  // Удаление технологии по индексу
   const handleRemoveTech = (projIndex: any, techIndex: any) => {
     const currentArr = projectsValues?.[projIndex]?.technologies || [];
     const newArr = currentArr.filter((item: any, i: any) => i !== techIndex);
-    setValue(`projects.${projIndex}.technologies`, newArr, {
-      shouldValidate: true,
-    });
+    setValue(`projects.${projIndex}.technologies`, newArr, { shouldValidate: true });
   };
 
+  // Render section header
+  const renderSectionHeader = (title: string) => (
+    <>
+      <div className="w-full border-b border-indigo-500 my-6" />
+      <h2 className="text-center  text-white font-bold text-xl mb-4">{title}</h2>
+    </>
+  );
+
+  // Render input field
+  const renderInput = (label: string, name: string, options: any = {}) => (
+    <div className="mb-4">
+      <label className="block text-white font-medium mb-2">{label}</label>
+      <input
+        {...register(name, options)}
+        className="w-full px-4 py-2 bg-[#4D4D4D] text-white border border-indigo-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+      />
+    </div>
+  );
+
+  // Render textarea field
+  const renderTextarea = (label: string, name: string) => (
+    <div className="mb-4">
+      <label className="block text-white font-medium mb-2">{label}</label>
+      <textarea
+        {...register(name)}
+        className="w-full px-4 py-2 bg-[#808080] text-white border border-indigo-500 rounded-lg h-32 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+      />
+    </div>
+  );
+
+  // Render array field section
+  const renderArraySection = (
+    title: string,
+    fields: any[],
+    fieldsConfig: any[],
+    appendFn: any,
+    removeFn: any,
+    defaultItem: any
+  ) => (
+    <div className="mb-8">
+      {renderSectionHeader(title)}
+      
+      {fields.map((field, index) => (
+        <div key={field.id} className="bg-indigo-800 p-4 rounded-lg mb-4 border border-indigo-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {fieldsConfig.map((config) => (
+              <div key={config.name}>
+                <label className="block text-white font-medium mb-2">{config.label}</label>
+                <input
+                  {...register(`${config.arrayName}.${index}.${config.name}`)}
+                  className="w-full px-4 py-2 bg-indigo-700 text-white border border-indigo-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => removeFn(index)}
+            className="mt-3 px-4 py-2 bg-red-800 hover:bg-red-700 text-white rounded-lg transition-colors"
+          >
+            Удалить
+          </button>
+        </div>
+      ))}
+      
+      <button
+        type="button"
+        onClick={() => appendFn(defaultItem)}
+        className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
+      >
+        Добавить
+      </button>
+    </div>
+  );
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-4 p-4">
-        <div className="flex flex-col">
-          <label className="text-white font-bold">Имя</label>
-          <input
-            {...register("first_name")}
-            className="w-full mt-2 p-4 bg-white rounded-lg"
-          />
+    <form onSubmit={handleSubmit(onSubmit)} className="bg-indigo-00 p-6 rounded-lg shadow-md">
+      {/* Основная информация */}
+      <div className="mb-8">
+        {renderSectionHeader("Основная информация")}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {renderInput("Имя", "first_name")}
+          {renderInput("Фамилия", "last_name")}
+          {renderInput("Должность", "position")}
+          {renderInput("Дата рождения", "last_name")}
         </div>
+        {renderTextarea("О себе", "about")}
+      </div>
 
-        <div className="flex flex-col">
-          <label className="text-white font-bold">Фамилия</label>
-          <input
-            {...register("last_name")}
-            className="w-full mt-2 p-4 bg-white rounded-lg"
-          />
+      {/* Контакты */}
+      <div className="mb-8">
+        {renderSectionHeader("Контакты")}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {renderInput("Email", "contact.email")}
+          {renderInput("Телефон", "contact.phone")}
+          {renderInput("Telegram", "contact.telegram")}
+          {renderInput("Адрес", "contact.location")}
+          {renderInput("GitHub", "contact.github")}
+          {renderInput("Twitter", "contact.twitter")}
+          {renderInput("Linkedin", "contact.linkedin")}
         </div>
+      </div>
 
-        <div className="flex flex-col">
-          <label className="text-white font-bold">Должность</label>
-          <input
-            {...register("position")}
-            className="w-full mt-2 p-4 bg-white rounded-lg"
-          />
-        </div>
+      {/* Опыт работы */}
+      {renderArraySection(
+        "Опыт работы",
+        fieldArrays.experience.fields,
+        [
+          { arrayName: "experience", name: "position", label: "Должность" },
+          { arrayName: "experience", name: "company", label: "Компания" },
+          { arrayName: "experience", name: "period", label: "Период" },
+          { arrayName: "experience", name: "description", label: "Описание" },
+        ],
+        fieldArrays.experience.append,
+        fieldArrays.experience.remove,
+        { position: "", company: "", period: "", description: "" }
+      )}
 
-        <div className="flex flex-col">
-          <label className="text-white font-bold">О себе</label>
-          <textarea
-            {...register("about")}
-            className="w-full h-50 max-h-50 min-h-50 mt-2 p-4 bg-white rounded-lg"
-          />
-        </div>
+      {/* Образование */}
+      {renderArraySection(
+        "Образование",
+        fieldArrays.education.fields,
+        [
+          { arrayName: "education", name: "degree", label: "Специальность" },
+          { arrayName: "education", name: "institution", label: "Университет" },
+          { arrayName: "education", name: "year", label: "Год" },
+        ],
+        fieldArrays.education.append,
+        fieldArrays.education.remove,
+        { degree: "", institution: "", year: "" }
+      )}
 
-        <div className="w-full border-b border-indigo-500" />
+      {/* Сертификаты */}
+      {renderArraySection(
+        "Сертификаты",
+        fieldArrays.certifications.fields,
+        [
+          { arrayName: "certifications", name: "name", label: "Наименование" },
+          { arrayName: "certifications", name: "issuer", label: "Выдавший" },
+          { arrayName: "certifications", name: "year", label: "Год" },
+        ],
+        fieldArrays.certifications.append,
+        fieldArrays.certifications.remove,
+        { name: "", issuer: "", year: "" }
+      )}
 
-        <h1 className="text-center text-white font-bold">Контакты</h1>
-        <div className="grid grid-cols-7 gap-2">
-          <div className="flex flex-col">
-            <label className="text-white font-bold">Email</label>
-            <input
-              {...register("contact.email")}
-              className="w-full mt-2 p-4 bg-white rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-white font-bold">Телефон</label>
-            <input
-              {...register("contact.phone")}
-              className="w-full mt-2 p-4 bg-white rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-white font-bold">Telegram</label>
-            <input
-              {...register("contact.telegram")}
-              className="w-full mt-2 p-4 bg-white rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-white font-bold">Адрес</label>
-            <input
-              {...register("contact.location")}
-              className="w-full mt-2 p-4 bg-white rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-white font-bold">GitHub</label>
-            <input
-              {...register("contact.github")}
-              className="w-full mt-2 p-4 bg-white rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-white font-bold">Twitter</label>
-            <input
-              {...register("contact.twitter")}
-              className="w-full mt-2 p-4 bg-white rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-white font-bold">Linkedin</label>
-            <input
-              {...register("contact.linkedin")}
-              className="w-full mt-2 p-4 bg-white rounded-lg"
-            />
-          </div>
-        </div>
-
-        <div className="w-full border-b border-indigo-500" />
-
-        <h1 className="text-center text-white font-bold">Опыт</h1>
-        <div>
-          {experienceFields.map((field, index) => (
-            <div
-              key={field.id}
-              className="grid grid-cols-5 gap-2 items-center mb-2"
-            >
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Должность</label>
-                <input
-                  {...register(`experience.${index}.position`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Компания</label>
-                <input
-                  {...register(`experience.${index}.company`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Период</label>
-                <input
-                  {...register(`experience.${index}.period`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Описание</label>
-                <input
-                  {...register(`experience.${index}.description`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => removeExperience(index)}
-                className="px-6 py-2 mt-6 bg-red-800 hover:bg-red-900 text-white font-medium rounded-lg shadow"
-              >
-                Удалить
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() =>
-              appendExperience({
-                position: "",
-                company: "",
-                period: "",
-                description: "",
-              })
-            }
-            className="w-full px-6 py-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow"
-          >
-            Добавить опыт
-          </button>
-        </div>
-
-        <div className="w-full border-b border-indigo-500" />
-
-        <h1 className="text-center text-white font-bold">Образование</h1>
-        <div>
-          {educationFields.map((field, index) => (
-            <div
-              key={field.id}
-              className="grid grid-cols-4 gap-2 items-center mb-2"
-            >
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Специальность</label>
-                <input
-                  {...register(`education.${index}.degree`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Университет</label>
-                <input
-                  {...register(`education.${index}.institution`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Год</label>
-                <input
-                  {...register(`education.${index}.year`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => removeEducation(index)}
-                className="px-6 py-2 mt-6 bg-red-800 hover:bg-red-900 text-white font-medium rounded-lg shadow"
-              >
-                Удалить
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() =>
-              appendEducation({ degree: "", institution: "", year: "" })
-            }
-            className="w-full px-6 py-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow"
-          >
-            Добавить образование
-          </button>
-        </div>
-
-        <div className="w-full border-b border-indigo-500" />
-
-        <h1 className="text-center text-white font-bold">Сертификаты</h1>
-        <div>
-          {certificationsFields.map((field, index) => (
-            <div
-              key={field.id}
-              className="grid grid-cols-4 gap-2 items-center mb-2"
-            >
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Наименование</label>
-                <input
-                  {...register(`certifications.${index}.name`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Выдавший</label>
-                <input
-                  {...register(`certifications.${index}.issuer`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Год</label>
-                <input
-                  {...register(`certifications.${index}.year`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => removeCertification(index)}
-                className="px-6 py-2 mt-6 bg-red-800 hover:bg-red-900 text-white font-medium rounded-lg shadow"
-              >
-                Удалить
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() =>
-              appendCertification({ name: "", issuer: "", year: "" })
-            }
-            className="w-full px-6 py-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow"
-          >
-            Добавить сертификат
-          </button>
-        </div>
-
-        <div className="w-full border-b border-indigo-500" />
-
-        <h1 className="text-center text-white font-bold">Проекты</h1>
-        <div>
-          {projectsFields.map((field, index) => (
-            <div
-              key={field.id}
-              className="grid grid-cols-4 gap-2 items-center mb-2"
-            >
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Наименование</label>
-                <input
-                  {...register(`projects.${index}.name`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Описание</label>
-                <input
-                  {...register(`projects.${index}.description`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-white font-bold">Технологии</label>
-
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {projectsValues?.[index]?.technologies.map(
-                    (tech: any, techIdx: number) => (
-                      <span
-                        key={techIdx}
-                        className="bg-blue-700 text-white px-3 py-1 rounded-full flex items-center"
+      {/* Проекты */}
+      <div className="mb-8">
+        {renderSectionHeader("Проекты")}
+        
+        {fieldArrays.projects.fields.map((field, index) => (
+          <div key={field.id} className="bg-indigo-800 p-4 rounded-lg mb-4 border border-indigo-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {renderInput("Наименование", `projects.${index}.name`)}
+              {renderInput("Описание", `projects.${index}.description`)}
+              
+              <div className="md:col-span-2">
+                <label className="block text-white font-medium mb-2">Технологии</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {projectsValues?.[index]?.technologies?.map((tech: any, techIdx: number) => (
+                    <span
+                      key={techIdx}
+                      className="bg-blue-700 text-white px-3 py-1 rounded-full flex items-center"
+                    >
+                      {tech}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTech(index, techIdx)}
+                        className="ml-2 text-red-200 hover:text-white"
                       >
-                        {tech}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTech(index, techIdx)}
-                          className="ml-2 text-red-200 hover:text-white"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    )
-                  )}
-
-                  <input
-                    ref={(el) => {
-                      techInputRefs.current[index] = el;
-                    }}
-                    type="text"
-                    value={techInputs[index] || ""}
-                    placeholder="Нажмите Enter чтобы добавить"
-                    onChange={(e) =>
-                      setTechInputs((prev) => ({
-                        ...prev,
-                        [index]: e.target.value,
-                      }))
-                    }
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === ",") {
-                        e.preventDefault();
-                        handleAddTech(index, techInputs[index] || "");
-                      }
-                      if (e.key === "Backspace" && !techInputs[index]) {
-                        // Стереть последний тег по Backspace на пустом input
-                        const arr = projectsValues?.[index]?.technologies || [];
-                        if (arr.length > 0) {
-                          handleRemoveTech(index, arr.length - 1);
-                        }
-                      }
-                    }}
-                    className="w-full p-4 bg-white rounded-lg"
-                  />
+                        ×
+                      </button>
+                    </span>
+                  ))}
                 </div>
+                
                 <input
-                  type="hidden"
-                  {...register(`projects.${index}.technologies`)}
+                  ref={(el) => (techInputRefs.current[index] = el)}
+                  type="text"
+                  value={techInputs[index] || ""}
+                  placeholder="Введите технологию и нажмите Enter"
+                  onChange={(e) => setTechInputs((prev) => ({ ...prev, [index]: e.target.value }))}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      e.preventDefault();
+                      handleAddTech(index, techInputs[index] || "");
+                    }
+                    if (e.key === "Backspace" && !techInputs[index]) {
+                      const arr = projectsValues?.[index]?.technologies || [];
+                      if (arr.length > 0) handleRemoveTech(index, arr.length - 1);
+                    }
+                  }}
+                  className="w-full px-4 py-2 bg-indigo-700 text-white border border-indigo-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
+                <input type="hidden" {...register(`projects.${index}.technologies`)} />
               </div>
-
-              <button
-                type="button"
-                onClick={() => removeProject(index)}
-                className="px-6 py-2 mt-6 bg-red-800 hover:bg-red-900 text-white font-medium rounded-lg shadow"
-              >
-                Удалить
-              </button>
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={() =>
-              appendProject({ name: "", description: "", technologies: [] })
-            }
-            className="w-full px-6 py-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow"
-          >
-            Добавить проект
-          </button>
-        </div>
-
-        <div className="w-full border-b border-indigo-500" />
-
-        <h1 className="text-center text-white font-bold">Навыки</h1>
-        <div>
-          {skillsFields?.map((field: any, index: number) => (
-            <div
-              key={field.id}
-              className="grid grid-cols-2 gap-2 items-center mb-2"
+            
+            <button
+              type="button"
+              onClick={() => fieldArrays.projects.remove(index)}
+              className="mt-3 px-4 py-2 bg-red-800 hover:bg-red-700 text-white rounded-lg transition-colors"
             >
-              <div className="flex flex-col">
-                <label className="text-white font-bold">{index + 1}.</label>
-                <input
-                  {...register(`skills.${index}`)}
-                  className="w-full mt-2 p-4 bg-white rounded-lg"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => removeSkill(index)}
-                className="px-6 py-2 mt-6 bg-red-800 hover:bg-red-900 text-white font-medium rounded-lg shadow"
-              >
-                Удалить
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => appendSkill("")}
-            className="w-full px-6 py-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow"
-          >
-            Добавить навык
-          </button>
-        </div>
-
+              Удалить проект
+            </button>
+          </div>
+        ))}
+        
         <button
-          type="submit"
-          className="bg-indigo-600 hover:bg-indigo-700 transition-colors px-4 py-2 rounded-lg text-white font-medium focus:outline-none"
+          type="button"
+          onClick={() => fieldArrays.projects.append({ name: "", description: "", technologies: [] })}
+          className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
         >
-          Сохранить
+          Добавить проект
         </button>
       </div>
+
+      {/* Навыки */}
+      <div className="mb-8">
+        {renderSectionHeader("Навыки")}
+        
+        {fieldArrays.skills.fields.map((field, index) => (
+          <div key={field.id} className="flex items-center gap-4 mb-3">
+            <input
+              {...register(`skills.${index}`)}
+              className="flex-1 px-4 py-2 bg-indigo-700 text-white border border-indigo-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+            <button
+              type="button"
+              onClick={() => fieldArrays.skills.remove(index)}
+              className="px-4 py-2 bg-red-800 hover:bg-red-700 text-white rounded-lg transition-colors"
+            >
+              Удалить
+            </button>
+          </div>
+        ))}
+        
+        <button
+          type="button"
+          onClick={() => fieldArrays.skills.append("")}
+          className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
+        >
+          Добавить навык
+        </button>
+      </div>
+
+      {/* Кнопка сохранения */}
+      <button
+        type="submit"
+        className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-md transition-colors"
+      >
+        Сохранить резюме
+      </button>
     </form>
   );
 };
